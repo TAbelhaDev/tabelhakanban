@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -23,6 +24,7 @@ const (
 	modeInput
 	modeConfirm
 	modeLogs
+	modeLoading
 )
 
 // inputKind says what the text input is creating/renaming.
@@ -141,6 +143,12 @@ type appModel struct {
 	// the "," overlay that lets the user rebind them. Both read from reg.
 	helpModal     *tuiui.HelpModal
 	settingsModal *tuiui.SettingsModal
+
+	// radarGen guards against a tradar digest result landing after the user
+	// already cancelled (or a newer scan superseded it); radarCancel kills the
+	// in-flight subprocess.
+	radarGen    int
+	radarCancel context.CancelFunc
 }
 
 func newModel() appModel {
@@ -291,6 +299,17 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if _, ok := msg.(editorFinishedMsg); ok {
 		return m, m.rescan(false)
 	}
+	if doneMsg, ok := msg.(radarScanDoneMsg); ok {
+		if doneMsg.gen != m.radarGen {
+			return m, nil // superseded by a cancel or a newer run
+		}
+		m.mode = modeBoard
+		m.radarCancel = nil
+		if doneMsg.err != nil {
+			return m, m.logError("tradar digest: " + strings.TrimSpace(doneMsg.output+" "+doneMsg.err.Error()))
+		}
+		return m, tea.Batch(m.rescan(false), m.logInfo("tradar digest concluído"))
+	}
 
 	// The settings/help modals swallow all keys while open — the app must
 	// not act on them (so "q" closes the modal instead of quitting, etc.).
@@ -308,6 +327,8 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.updateConfirm(msg)
 	case modeLogs:
 		return m.updateLogs(msg)
+	case modeLoading:
+		return m.updateLoading(msg)
 	default:
 		return m.updateBoard(msg)
 	}
@@ -329,6 +350,8 @@ func (m *appModel) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case key.Matches(keyMsg, resolve("refresh")):
 		return m, m.rescan(true)
+	case key.Matches(keyMsg, resolve("radar-scan")):
+		return m, m.startRadarScan()
 	case key.Matches(keyMsg, resolve("reload")):
 		// Config-file-first: an external edit to keybindings.json takes effect
 		// here, without restarting.
@@ -479,6 +502,49 @@ func (m *appModel) moveColumnBetween(delta int) tea.Cmd {
 	m.colIdx = next
 	m.reclamp()
 	return m.logAction("coluna", "reordenada", name, b.Name, "", "")
+}
+
+// radarScanDoneMsg carries a finished `tradar digest` run back into Update.
+// gen ties it to the startRadarScan call that produced it, so a stale result
+// (from a run the user already cancelled) is ignored on arrival.
+type radarScanDoneMsg struct {
+	gen    int
+	output string
+	err    error
+}
+
+// startRadarScan launches `tradar digest --no-wait` in the background and
+// switches to the loading modal. --no-wait skips digest's own up-to-5-minute
+// network-wait probe so the TUI never blocks on it.
+func (m *appModel) startRadarScan() tea.Cmd {
+	m.radarGen++
+	gen := m.radarGen
+	ctx, cancel := context.WithCancel(context.Background())
+	m.radarCancel = cancel
+	m.mode = modeLoading
+	return func() tea.Msg {
+		out, err := exec.CommandContext(ctx, "tradar", "digest", "--no-wait").CombinedOutput()
+		return radarScanDoneMsg{gen: gen, output: string(out), err: err}
+	}
+}
+
+// updateLoading handles the modal shown while a tradar digest scan runs —
+// esc/ctrl+c cancels the subprocess and returns to the board immediately,
+// without waiting for its (now-discarded) result.
+func (m *appModel) updateLoading(msg tea.Msg) (tea.Model, tea.Cmd) {
+	keyMsg, ok := msg.(tea.KeyMsg)
+	if !ok {
+		return m, nil
+	}
+	switch keyMsg.String() {
+	case "esc", "ctrl+c":
+		if m.radarCancel != nil {
+			m.radarCancel()
+		}
+		m.radarGen++ // invalidate the in-flight result when it lands
+		m.mode = modeBoard
+	}
+	return m, nil
 }
 
 func (m *appModel) updateConfirm(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -829,6 +895,8 @@ func (m appModel) View() string {
 		return m.renderConfirm()
 	case modeLogs:
 		return m.renderLogs()
+	case modeLoading:
+		return m.renderLoading()
 	}
 
 	innerW := m.boardAreaWidth()
@@ -1137,6 +1205,21 @@ func (m appModel) renderConfirm() string {
 			theme.Dim().Render(fmt.Sprintf("Apagar '%s'? Isso remove o arquivo.", m.confirmCard.Title)) + "\n\n" +
 			theme.Success().Render("y") + theme.Dim().Render(" apagar · ") + theme.Error().Render("n") + theme.Dim().Render(" cancelar")
 	}
+	box := theme.Modal().Render(text)
+	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, box)
+}
+
+func (m appModel) renderLoading() string {
+	width, height := m.width, m.height
+	if width <= 0 {
+		width = 100
+	}
+	if height <= 0 {
+		height = 30
+	}
+	text := theme.Title().Render("tradar digest") + "\n\n" +
+		theme.Dim().Render("escaneando e atualizando o board...") + "\n\n" +
+		theme.Dim().Render("esc cancela")
 	box := theme.Modal().Render(text)
 	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, box)
 }

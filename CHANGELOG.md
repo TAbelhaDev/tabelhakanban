@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.0] - 2026-08-25
+
+### Added
+
+- `ctrl+d` runs `tradar digest --no-wait` in the background when `tradar` is
+  on `PATH`, showing a cancellable loading modal (`esc`/`ctrl+c` kills the
+  scan) and rescanning the board when it finishes. Absent entirely — no
+  error, just not offered — when tradar isn't installed.
+
+### Changed
+
+- Renamed the installed binary from `tabelakanban` to `tkanban`, matching
+  the `t`+suffix convention already used by `tjobs`. Usage/help text, the
+  release artifacts and the README now use the short name; `go install`
+  still installs under the module name `tabelakanban` unless built locally
+  with `go build -o tkanban .`.
+
 ## [v0.3.0] - 2026-08-14
 
 ### Added

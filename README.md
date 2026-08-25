@@ -60,25 +60,26 @@ Requires Go 1.26+.
 go install github.com/ianptkcs/tabelakanban@latest
 ```
 
-Or building from source:
+That installs the binary as `tabelakanban` (matching the module name). To get the short
+`tkanban` name used throughout this README, build from source instead:
 
 ```bash
 git clone https://github.com/TabelaDev/tabelakanban.git
 cd tabelakanban
-go build -o tabelakanban .
+go build -o tkanban .
 ```
 
 To use it as a global command (needs `~/.local/bin` on your `PATH`):
 
 ```bash
-go build -o ~/.local/bin/tabelakanban .
+go build -o ~/.local/bin/tkanban .
 ```
 
 ## Usage
 
 ```
-tabelakanban         # opens the TUI
-tabelakanban list    # plain-text dump, no TTY — useful for scripting
+tkanban         # opens the TUI
+tkanban list    # plain-text dump, no TTY — useful for scripting
 ```
 
 Inside the TUI:
@@ -106,16 +107,16 @@ Cards within a column appear in alphabetical order of title.
 ## IPC
 
 For scripts, or for an LLM to ask "what is in the queue and which column is each
-thing in" without opening the TUI, `tabelakanban` exposes the same
-`ipc <method> --json` subcommand as `djobs`/`tabelaradar`:
+thing in" without opening the TUI, `tkanban` exposes the same
+`ipc <method> --json` subcommand as `djobs`/`tradar`:
 
 ```bash
-tabelakanban ipc boards.list --json                 # every board, column and card
-tabelakanban ipc boards.list name=exemplo --json    # a single board
-tabelakanban ipc boards.next --json                 # the card tabelakanban itself would prioritise
-tabelakanban ipc cards.create board=exemplo column=a-fazer title=nova --json
-tabelakanban ipc cards.move board=exemplo from=a-fazer to=feito title=nova --json
-tabelakanban ipc cards.update board=exemplo column=feito title=nova 'body=...' --json
+tkanban ipc boards.list --json                 # every board, column and card
+tkanban ipc boards.list name=exemplo --json    # a single board
+tkanban ipc boards.next --json                 # the card tkanban itself would prioritise
+tkanban ipc cards.create board=exemplo column=a-fazer title=nova --json
+tkanban ipc cards.move board=exemplo from=a-fazer to=feito title=nova --json
+tkanban ipc cards.update board=exemplo column=feito title=nova 'body=...' --json
 ```
 
 `cards.update` replaces a card's body (its `due:` front matter survives) — the

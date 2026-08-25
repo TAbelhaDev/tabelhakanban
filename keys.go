@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os/exec"
 	"path/filepath"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -14,7 +15,7 @@ import (
 var reg = tuiui.NewKeyRegistry(filepath.Join(tuiui.ConfigDir(), "tabelakanban", "keybindings.json"))
 
 func init() {
-	reg.RegisterMany(
+	actions := []tuiui.Action{
 		tuiui.Action{ID: "quit", Help: "sair", Keys: []string{"q", "ctrl+c"}},
 		tuiui.Action{ID: "help", Help: "keybindings", Keys: []string{"?"}},
 		tuiui.Action{ID: "settings", Help: "rebind keys", Keys: []string{","}},
@@ -40,7 +41,14 @@ func init() {
 		tuiui.Action{ID: "reorder-col-right", Help: "coluna dir", Keys: []string{"ctrl+l"}},
 		tuiui.Action{ID: "card-down", Help: "card baixo", Keys: []string{"j", "down"}, Label: "j"},
 		tuiui.Action{ID: "card-up", Help: "card cima", Keys: []string{"k", "up"}, Label: "k"},
-	)
+	}
+	// tradar's digest scan is only offered when tradar is actually installed —
+	// an unregistered action id resolves to a disabled binding, so it's simply
+	// absent from the footer/help modal rather than erroring when pressed.
+	if _, err := exec.LookPath("tradar"); err == nil {
+		actions = append(actions, tuiui.Action{ID: "radar-scan", Help: "radar digest", Keys: []string{"ctrl+d"}})
+	}
+	reg.RegisterMany(actions...)
 }
 
 // resolve is a short alias so Update reads like the old named keys.

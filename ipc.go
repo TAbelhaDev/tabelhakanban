@@ -43,12 +43,12 @@ func boardsToJSON(boards []Board) []boardJSON {
 	return out
 }
 
-// runIPC implements `tabelakanban ipc <método> [key=value...] --json`, the
-// same scriptable-data-source convention as dcal/djobs/tabelaradar.
+// runIPC implements `tkanban ipc <método> [key=value...] --json`, the
+// same scriptable-data-source convention as dcal/djobs/tradar.
 func runIPC(args []string) int {
 	parsed, err := tuiui.ParseIPCArgs(args)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "uso: tabelakanban ipc <método> [key=value...] --json")
+		fmt.Fprintln(os.Stderr, "uso: tkanban ipc <método> [key=value...] --json")
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
