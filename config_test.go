@@ -9,17 +9,17 @@ import (
 )
 
 // configDir points XDG_CONFIG_HOME at a temp dir and returns
-// <tmp>/tabelakanban, where both the legacy "config" and the new
+// <tmp>/tabelhakanban, where both the legacy "config" and the new
 // "config.toml" live.
 func configDir(t *testing.T) string {
 	t.Helper()
 	base := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", base)
-	t.Setenv("TABELAKANBAN_CONFIG", "")
-	t.Setenv("TABELAKANBAN_ROOT", "")
+	t.Setenv("TABELHAKANBAN_CONFIG", "")
+	t.Setenv("TABELHAKANBAN_ROOT", "")
 	settings = defaultConfig()
 
-	dir := filepath.Join(base, "tabelakanban")
+	dir := filepath.Join(base, "tabelhakanban")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatal(err)
 	}

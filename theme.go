@@ -6,11 +6,11 @@ import (
 
 // theme mirrors the installed DankMaterialShell's own configured accent
 // (falling back to a manually chosen Catppuccin accent when DMS isn't
-// installed/configured) — same lookup djobs and tabelaradar use, kept in
-// sync so every tool's chrome matches. TABELAKANBAN_DMS_SETTINGS/
-// TABELAKANBAN_ACCENT env vars override the defaults; see
+// installed/configured) — same lookup djobs and tabelharadar use, kept in
+// sync so every tool's chrome matches. TABELHAKANBAN_DMS_SETTINGS/
+// TABELHAKANBAN_ACCENT env vars override the defaults; see
 // tabelatuiui.NewThemeFromEnv.
-var theme = tuiui.NewThemeFromEnv("TABELAKANBAN")
+var theme = tuiui.NewThemeFromEnv("TABELHAKANBAN")
 
 var (
 	colBase     = theme.Base

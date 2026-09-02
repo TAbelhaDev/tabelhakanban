@@ -42,8 +42,8 @@ func driveKey(m *appModel, msg tea.Msg) {
 // ops functions) wires keys to filesystem changes.
 func TestKeyFlow(t *testing.T) {
 	root := t.TempDir()
-	os.Setenv("TABELAKANBAN_ROOT", root)
-	os.Setenv("TABELAKANBAN_CONFIG", filepath.Join(root, "no-config"))
+	os.Setenv("TABELHAKANBAN_ROOT", root)
+	os.Setenv("TABELHAKANBAN_CONFIG", filepath.Join(root, "no-config"))
 
 	// board "dev" with columns "backlog", "fazendo"
 	for _, col := range []string{"backlog", "fazendo"} {
@@ -160,8 +160,8 @@ func TestCardPreviewSkipsH1(t *testing.T) {
 
 func TestCtrlNavAndPreview(t *testing.T) {
 	root := t.TempDir()
-	os.Setenv("TABELAKANBAN_ROOT", root)
-	os.Setenv("TABELAKANBAN_CONFIG", filepath.Join(root, "no-config"))
+	os.Setenv("TABELHAKANBAN_ROOT", root)
+	os.Setenv("TABELHAKANBAN_CONFIG", filepath.Join(root, "no-config"))
 	for _, col := range []string{"a", "b"} {
 		if err := os.MkdirAll(filepath.Join(root, "dev", col), 0o755); err != nil {
 			t.Fatal(err)
@@ -249,8 +249,8 @@ func TestCtrlNavAndPreview(t *testing.T) {
 
 func TestSidebarNavigation(t *testing.T) {
 	root := t.TempDir()
-	os.Setenv("TABELAKANBAN_ROOT", root)
-	os.Setenv("TABELAKANBAN_CONFIG", filepath.Join(root, "no-config"))
+	os.Setenv("TABELHAKANBAN_ROOT", root)
+	os.Setenv("TABELHAKANBAN_CONFIG", filepath.Join(root, "no-config"))
 	for _, board := range []string{"a", "b", "c"} {
 		if err := os.MkdirAll(filepath.Join(root, board, "col"), 0o755); err != nil {
 			t.Fatal(err)
@@ -333,8 +333,8 @@ func TestWidthHelpers(t *testing.T) {
 // sizes (negative body heights must not crash the render).
 func TestTinyTerminalNoPanic(t *testing.T) {
 	root := t.TempDir()
-	os.Setenv("TABELAKANBAN_ROOT", root)
-	os.Setenv("TABELAKANBAN_CONFIG", filepath.Join(root, "no-config"))
+	os.Setenv("TABELHAKANBAN_ROOT", root)
+	os.Setenv("TABELHAKANBAN_CONFIG", filepath.Join(root, "no-config"))
 	if err := os.MkdirAll(filepath.Join(root, "dev", "col"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -365,8 +365,8 @@ func TestTinyTerminalNoPanic(t *testing.T) {
 
 func TestCardDueFlow(t *testing.T) {
 	root := t.TempDir()
-	os.Setenv("TABELAKANBAN_ROOT", root)
-	os.Setenv("TABELAKANBAN_CONFIG", filepath.Join(root, "no-config"))
+	os.Setenv("TABELHAKANBAN_ROOT", root)
+	os.Setenv("TABELHAKANBAN_CONFIG", filepath.Join(root, "no-config"))
 	if err := os.MkdirAll(filepath.Join(root, "dev", "backlog"), 0o755); err != nil {
 		t.Fatal(err)
 	}

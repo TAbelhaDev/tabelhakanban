@@ -1,4 +1,4 @@
-module github.com/ianptkcs/tabelakanban
+module github.com/TAbelhaDev/tabelhakanban
 
 go 1.26.1
 

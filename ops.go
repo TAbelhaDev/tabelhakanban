@@ -78,7 +78,7 @@ func setCardDue(card Card, due time.Time) (Card, error) {
 // updateCardBody replaces the card's body, preserving the YAML front matter
 // (the due date) exactly as setCardDue preserves the body when it writes the
 // front matter. Used by the ipc cards.update subcommand — the counterpart to
-// setCardDue, for external editors like the tabelaradar digest.
+// setCardDue, for external editors like the tabelharadar digest.
 func updateCardBody(card Card, body string) (Card, error) {
 	if err := os.WriteFile(card.Path, []byte(renderFrontMatter(card.Due)+body), 0o644); err != nil {
 		return Card{}, err

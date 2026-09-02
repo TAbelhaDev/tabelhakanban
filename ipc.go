@@ -43,12 +43,12 @@ func boardsToJSON(boards []Board) []boardJSON {
 	return out
 }
 
-// runIPC implements `tkanban ipc <método> [key=value...] --json`, the
+// runIPC implements `takanban ipc <método> [key=value...] --json`, the
 // same scriptable-data-source convention as dcal/djobs/tradar.
 func runIPC(args []string) int {
 	parsed, err := tuiui.ParseIPCArgs(args)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "uso: tkanban ipc <método> [key=value...] --json")
+		fmt.Fprintln(os.Stderr, "uso: takanban ipc <método> [key=value...] --json")
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
@@ -182,7 +182,7 @@ func ipcCardsMove(boards []Board, filters map[string]string) int {
 	return 1
 }
 
-// ipcBoardsNext returns the single card tabelakanban itself would put first:
+// ipcBoardsNext returns the single card tabelhakanban itself would put first:
 // the top card of the first column that isn't a "done"-ish column (by name),
 // falling back to the first card of the first column if every column looks
 // done.

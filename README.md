@@ -1,6 +1,6 @@
 <div align="center">
 
-# TabelaKanban
+# TAbelhaKanban
 
 **A kanban TUI over plain text files** — every card is a `.md`, every column is a
 folder, every board is a folder of folders. Move a card and you move a file; edit
@@ -8,9 +8,9 @@ it in your `$EDITOR` and git takes care of the rest.
 
 **English** · [Português](README.pt-BR.md)
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/TabelaDev/tabelakanban?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/TAbelhaDev/tabelhakanban?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
 [![Built with Bubble Tea](https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4?style=flat-square)](https://github.com/charmbracelet/bubbletea)
-[![Powered by tabelatuiui](https://img.shields.io/badge/theme-tabelatuiui-d6b4f7?style=flat-square)](https://github.com/TabelaDev/tabelatuiui)
+[![Powered by tabelatuiui](https://img.shields.io/badge/theme-tabelatuiui-d6b4f7?style=flat-square)](https://github.com/TAbelhaDev/tabelatuiui)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ianptkcs)
@@ -57,29 +57,29 @@ just the markdown you already write every day.
 Requires Go 1.26+.
 
 ```bash
-go install github.com/ianptkcs/tabelakanban@latest
+go install github.com/TAbelhaDev/tabelhakanban@latest
 ```
 
-That installs the binary as `tabelakanban` (matching the module name). To get the short
-`tkanban` name used throughout this README, build from source instead:
+That installs the binary as `tabelhakanban` (matching the module name). To get the short
+`takanban` name used throughout this README, build from source instead:
 
 ```bash
-git clone https://github.com/TabelaDev/tabelakanban.git
-cd tabelakanban
-go build -o tkanban .
+git clone https://github.com/TAbelhaDev/tabelhakanban.git
+cd tabelhakanban
+go build -o takanban .
 ```
 
 To use it as a global command (needs `~/.local/bin` on your `PATH`):
 
 ```bash
-go build -o ~/.local/bin/tkanban .
+go build -o ~/.local/bin/takanban .
 ```
 
 ## Usage
 
 ```
-tkanban         # opens the TUI
-tkanban list    # plain-text dump, no TTY — useful for scripting
+takanban         # opens the TUI
+takanban list    # plain-text dump, no TTY — useful for scripting
 ```
 
 Inside the TUI:
@@ -107,30 +107,30 @@ Cards within a column appear in alphabetical order of title.
 ## IPC
 
 For scripts, or for an LLM to ask "what is in the queue and which column is each
-thing in" without opening the TUI, `tkanban` exposes the same
+thing in" without opening the TUI, `takanban` exposes the same
 `ipc <method> --json` subcommand as `djobs`/`tradar`:
 
 ```bash
-tkanban ipc boards.list --json                 # every board, column and card
-tkanban ipc boards.list name=exemplo --json    # a single board
-tkanban ipc boards.next --json                 # the card tkanban itself would prioritise
-tkanban ipc cards.create board=exemplo column=a-fazer title=nova --json
-tkanban ipc cards.move board=exemplo from=a-fazer to=feito title=nova --json
-tkanban ipc cards.update board=exemplo column=feito title=nova 'body=...' --json
+takanban ipc boards.list --json                 # every board, column and card
+takanban ipc boards.list name=exemplo --json    # a single board
+takanban ipc boards.next --json                 # the card takanban itself would prioritise
+takanban ipc cards.create board=exemplo column=a-fazer title=nova --json
+takanban ipc cards.move board=exemplo from=a-fazer to=feito title=nova --json
+takanban ipc cards.update board=exemplo column=feito title=nova 'body=...' --json
 ```
 
 `cards.update` replaces a card's body (its `due:` front matter survives) — the
 write counterpart to `cards.create`/`cards.move`, for an external editor (the
-tabelaradar digest) to append progress notes or rewrite a checklist.
+tabelharadar digest) to append progress notes or rewrite a checklist.
 
 `boards.next` returns the first card of the first column that does not look
 "done" (by name: `done`, `feito`, `conclu...`) — in the same spirit as
-tabelaradar's `projects.next`.
+tabelharadar's `projects.next`.
 
 ## Configuration
 
-Everything lives in `~/.config/tabelakanban/config.toml` (overridable through
-`TABELAKANBAN_CONFIG`). The file is optional and partial: only the keys present
+Everything lives in `~/.config/tabelhakanban/config.toml` (overridable through
+`TABELHAKANBAN_CONFIG`). The file is optional and partial: only the keys present
 override anything, the rest stay on their defaults. `f5` reloads without
 restarting.
 
@@ -155,11 +155,11 @@ done_column_markers = ["done", "feito", "conclu"]
 editor = "nvim"  # empty = use $EDITOR, then nvim
 ```
 
-With no file at all, it scans only `TABELAKANBAN_ROOT` (or `~/kanban`).
+With no file at all, it scans only `TABELHAKANBAN_ROOT` (or `~/kanban`).
 
 ### Migrating from the old format
 
-The config used to be `~/.config/tabelakanban/config`, one folder per line. **That
+The config used to be `~/.config/tabelhakanban/config`, one folder per line. **That
 file is still read** when no `config.toml` exists, with a warning on the notice
 line. The translation is direct:
 
@@ -172,16 +172,16 @@ Once `config.toml` exists, it takes over on its own.
 
 ### Other variables
 
-- `TABELAKANBAN_ROOT` — the root scanned when no config exists at all (`~/kanban`
+- `TABELHAKANBAN_ROOT` — the root scanned when no config exists at all (`~/kanban`
   by default).
-- `TABELAKANBAN_ACCENT` — a manual Catppuccin Mocha accent, used only when
+- `TABELHAKANBAN_ACCENT` — a manual Catppuccin Mocha accent, used only when
   DankMaterialShell is not installed or configured (`mauve` by default).
-- `TABELAKANBAN_DMS_SETTINGS` — path to the DMS `settings.json`, when it is not the
+- `TABELHAKANBAN_DMS_SETTINGS` — path to the DMS `settings.json`, when it is not the
   default one.
 
 The theme and the shared chrome (header/footer/panels, ANSI-aware padding, IPC
 helpers) come from
-[`tabelatuiui`](https://github.com/TabelaDev/tabelatuiui).
+[`tabelatuiui`](https://github.com/TAbelhaDev/tabelatuiui).
 
 ## Development
 

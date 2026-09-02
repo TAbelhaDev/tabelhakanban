@@ -905,7 +905,7 @@ func (m appModel) View() string {
 		innerH = 1
 	}
 
-	header := theme.Header(innerW).Render("TabelaKanban — " + m.currentBoardName())
+	header := theme.Header(innerW).Render("TAbelhaKanban — " + m.currentBoardName())
 
 	bodyHeight := innerH - headerLines - noticeLines - footerLines
 	if bodyHeight < 1 {
@@ -929,7 +929,7 @@ func (m appModel) View() string {
 func (m appModel) renderBoard(bodyHeight, innerW int) string {
 	b := m.currentBoard()
 	if b == nil {
-		content := theme.Title().Render("TabelaKanban") + "\n\n" + theme.Dim().Render("nenhum board ainda — pressione B para criar um")
+		content := theme.Title().Render("TAbelhaKanban") + "\n\n" + theme.Dim().Render("nenhum board ainda — pressione B para criar um")
 		return m.renderEmptyState(bodyHeight, innerW, content)
 	}
 	if len(b.Columns) == 0 {
@@ -1233,7 +1233,7 @@ func (m appModel) renderLogs() string {
 		innerH = 1
 	}
 
-	header := theme.Header(innerW).Render("TabelaKanban — log de atividades")
+	header := theme.Header(innerW).Render("TAbelhaKanban — log de atividades")
 
 	bodyHeight := innerH - headerLines - footerLines
 	if bodyHeight < 1 {

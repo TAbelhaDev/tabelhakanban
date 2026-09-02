@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Renamed the project from `tabelakanban` (TabelaKanban) to `tabelhakanban`
+  (TAbelhaKanban), following the org-wide `TabelaDev` → `TAbelhaDev` brand
+  migration. Module path is now `github.com/TAbelhaDev/tabelhakanban`; the
+  installed binary is now `takanban` (was `tkanban`).
+
 ## [v0.4.0] - 2026-08-25
 
 ### Added
@@ -16,10 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Renamed the installed binary from `tabelakanban` to `tkanban`, matching
+- Renamed the installed binary from `tabelhakanban` to `tkanban`, matching
   the `t`+suffix convention already used by `tjobs`. Usage/help text, the
   release artifacts and the README now use the short name; `go install`
-  still installs under the module name `tabelakanban` unless built locally
+  still installs under the module name `tabelhakanban` unless built locally
   with `go build -o tkanban .`.
 
 ## [v0.3.0] - 2026-08-14
@@ -27,10 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `ipc cards.update`: substitui o body de um card preservando o front-matter
-  de due — `tabelakanban ipc cards.update board= column= title= body= --json`.
+  de due — `tabelhakanban ipc cards.update board= column= title= body= --json`.
   É o par do `cards.create`/`cards.move` pra quem escreve o kanban por fora
-  (ex.: o digest do tabelaradar).
-- Config em TOML (`~/.config/tabelakanban/config.toml`), substituindo o
+  (ex.: o digest do tabelharadar).
+- Config em TOML (`~/.config/tabelhakanban/config.toml`), substituindo o
   formato de uma-pasta-por-linha. Além de `roots`, agora são configuráveis a
   altura do card, o gap entre painéis, a largura da sidebar, o timeout do
   notice, a capacidade do log, os marcadores de coluna "done" do
@@ -39,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- O arquivo antigo `~/.config/tabelakanban/config` continua sendo lido quando
+- O arquivo antigo `~/.config/tabelhakanban/config` continua sendo lido quando
   não existe `config.toml`, com um aviso apontando pro caminho novo.
 
 ## [v0.2.0] - 2026-08-06

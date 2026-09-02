@@ -8,11 +8,11 @@ import (
 	"github.com/ianptkcs/tabelatuiui"
 )
 
-// reg is tabelakanban's single source of truth for keybindings: defaults
-// registered below, overrides persisted to ~/.config/tabelakanban/keybindings.json.
+// reg is tabelhakanban's single source of truth for keybindings: defaults
+// registered below, overrides persisted to ~/.config/tabelhakanban/keybindings.json.
 // Resolve() returns the effective binding, shared by dispatch, footer and
 // help modal — a user rebind via the settings modal applies to all at once.
-var reg = tuiui.NewKeyRegistry(filepath.Join(tuiui.ConfigDir(), "tabelakanban", "keybindings.json"))
+var reg = tuiui.NewKeyRegistry(filepath.Join(tuiui.ConfigDir(), "tabelhakanban", "keybindings.json"))
 
 func init() {
 	actions := []tuiui.Action{
@@ -42,10 +42,10 @@ func init() {
 		tuiui.Action{ID: "card-down", Help: "card baixo", Keys: []string{"j", "down"}, Label: "j"},
 		tuiui.Action{ID: "card-up", Help: "card cima", Keys: []string{"k", "up"}, Label: "k"},
 	}
-	// tradar's digest scan is only offered when tradar is actually installed —
+	// taradar's digest scan is only offered when taradar is actually installed —
 	// an unregistered action id resolves to a disabled binding, so it's simply
 	// absent from the footer/help modal rather than erroring when pressed.
-	if _, err := exec.LookPath("tradar"); err == nil {
+	if _, err := exec.LookPath("taradar"); err == nil {
 		actions = append(actions, tuiui.Action{ID: "radar-scan", Help: "radar digest", Keys: []string{"ctrl+d"}})
 	}
 	reg.RegisterMany(actions...)

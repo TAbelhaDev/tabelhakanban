@@ -1,6 +1,6 @@
 <div align="center">
 
-# TabelaKanban
+# TAbelhaKanban
 
 **Kanban TUI sobre arquivos de texto puro** — cada card é um `.md`, cada
 coluna é uma pasta, cada board é uma pasta de pastas. Move um card e move um
@@ -8,9 +8,9 @@ arquivo; edita no seu `$EDITOR` e o git cuida do resto.
 
 [English](README.md) · **Português**
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/TabelaDev/tabelakanban?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/TAbelhaDev/tabelhakanban?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
 [![Built with Bubble Tea](https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4?style=flat-square)](https://github.com/charmbracelet/bubbletea)
-[![Powered by tabelatuiui](https://img.shields.io/badge/theme-tabelatuiui-d6b4f7?style=flat-square)](https://github.com/TabelaDev/tabelatuiui)
+[![Powered by tabelatuiui](https://img.shields.io/badge/theme-tabelatuiui-d6b4f7?style=flat-square)](https://github.com/TAbelhaDev/tabelatuiui)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ianptkcs)
@@ -57,29 +57,29 @@ card é o markdown que você já escreve todo dia.
 Requer Go 1.26+.
 
 ```bash
-go install github.com/ianptkcs/tabelakanban@latest
+go install github.com/TAbelhaDev/tabelhakanban@latest
 ```
 
-Isso instala o binário como `tabelakanban` (nome do módulo). Pra ter o nome curto
-`tkanban` usado no resto deste README, compile a partir do source:
+Isso instala o binário como `tabelhakanban` (nome do módulo). Pra ter o nome curto
+`takanban` usado no resto deste README, compile a partir do source:
 
 ```bash
-git clone https://github.com/TabelaDev/tabelakanban.git
-cd tabelakanban
-go build -o tkanban .
+git clone https://github.com/TAbelhaDev/tabelhakanban.git
+cd tabelhakanban
+go build -o takanban .
 ```
 
 Pra usar como comando global (precisa que `~/.local/bin` esteja no seu `PATH`):
 
 ```bash
-go build -o ~/.local/bin/tkanban .
+go build -o ~/.local/bin/takanban .
 ```
 
 ## Uso
 
 ```
-tkanban         # abre a TUI
-tkanban list    # dump em texto plano, sem TTY — útil pra scriptar
+takanban         # abre a TUI
+takanban list    # dump em texto plano, sem TTY — útil pra scriptar
 ```
 
 Dentro da TUI:
@@ -107,31 +107,31 @@ Cards numa mesma coluna aparecem em ordem alfabética de título.
 ## IPC
 
 Pra scripts ou pra um LLM perguntar "o que tem na fila, em que coluna cada
-coisa está" sem abrir a TUI, `tkanban` expõe o mesmo subcomando
+coisa está" sem abrir a TUI, `takanban` expõe o mesmo subcomando
 `ipc <método> --json` de `djobs`/`tradar`:
 
 ```bash
-tkanban ipc boards.list --json                 # todos os boards, colunas e cards
-tkanban ipc boards.list name=exemplo --json    # só um board
-tkanban ipc boards.next --json                 # o card que o próprio tkanban priorizaria
-tkanban ipc cards.create board=exemplo column=a-fazer title=nova --json
-tkanban ipc cards.move board=exemplo from=a-fazer to=feito title=nova --json
-tkanban ipc cards.update board=exemplo column=feito title=nova 'body=...' --json
+takanban ipc boards.list --json                 # todos os boards, colunas e cards
+takanban ipc boards.list name=exemplo --json    # só um board
+takanban ipc boards.next --json                 # o card que o próprio takanban priorizaria
+takanban ipc cards.create board=exemplo column=a-fazer title=nova --json
+takanban ipc cards.move board=exemplo from=a-fazer to=feito title=nova --json
+takanban ipc cards.update board=exemplo column=feito title=nova 'body=...' --json
 ```
 
 `cards.update` substitui o body de um card (o front-matter de `due` sobrevive)
 — a contraparte de escrita do `cards.create`/`cards.move`, pra um editor
-externo (o digest do tabelaradar) anexar notas de progresso ou reescrever um
+externo (o digest do tabelharadar) anexar notas de progresso ou reescrever um
 checklist.
 
 `boards.next` devolve o primeiro card da primeira coluna que não parece
 "done" (por nome: `done`, `feito`, `conclu...`) — no mesmo espírito do
-`projects.next` do tabelaradar.
+`projects.next` do tabelharadar.
 
 ## Configuração
 
-Tudo fica em `~/.config/tabelakanban/config.toml` (sobrescrível via
-`TABELAKANBAN_CONFIG`). O arquivo é opcional e parcial: só as chaves presentes
+Tudo fica em `~/.config/tabelhakanban/config.toml` (sobrescrível via
+`TABELHAKANBAN_CONFIG`). O arquivo é opcional e parcial: só as chaves presentes
 sobrescrevem, o resto segue no default. `f5` recarrega sem reiniciar.
 
 ```toml
@@ -155,11 +155,11 @@ done_column_markers = ["done", "feito", "conclu"]
 editor = "nvim"  # vazio = usa $EDITOR, depois nvim
 ```
 
-Sem nenhum arquivo, varre só `TABELAKANBAN_ROOT` (ou `~/kanban`).
+Sem nenhum arquivo, varre só `TABELHAKANBAN_ROOT` (ou `~/kanban`).
 
 ### Migrando do formato antigo
 
-A config era `~/.config/tabelakanban/config`, uma pasta por linha. **Esse
+A config era `~/.config/tabelhakanban/config`, uma pasta por linha. **Esse
 arquivo continua sendo lido** quando não existe `config.toml`, com um aviso na
 linha de notice. A tradução é direta:
 
@@ -172,15 +172,15 @@ Criado o `config.toml`, ele passa a valer sozinho.
 
 ### Outras variáveis
 
-- `TABELAKANBAN_ROOT` — raiz varrida quando não existe config nenhuma (padrão
+- `TABELHAKANBAN_ROOT` — raiz varrida quando não existe config nenhuma (padrão
   `~/kanban`).
-- `TABELAKANBAN_ACCENT` — accent Catppuccin Mocha manual, usado só quando o
+- `TABELHAKANBAN_ACCENT` — accent Catppuccin Mocha manual, usado só quando o
   DankMaterialShell não está instalado/configurado (padrão `mauve`).
-- `TABELAKANBAN_DMS_SETTINGS` — caminho do `settings.json` do DMS, se não
+- `TABELHAKANBAN_DMS_SETTINGS` — caminho do `settings.json` do DMS, se não
   for o padrão.
 
 O tema e o chrome compartilhado (header/footer/panels, padding ANSI-aware,
-helpers de IPC) vêm da [`tabelatuiui`](https://github.com/TabelaDev/tabelatuiui).
+helpers de IPC) vêm da [`tabelatuiui`](https://github.com/TAbelhaDev/tabelatuiui).
 
 ## Desenvolvimento
 

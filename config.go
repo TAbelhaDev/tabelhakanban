@@ -11,8 +11,8 @@ import (
 	"github.com/ianptkcs/tabelatuiui"
 )
 
-// config is tabelakanban's settings schema, read from
-// ~/.config/tabelakanban/config.toml. Every field falls back to
+// config is tabelhakanban's settings schema, read from
+// ~/.config/tabelhakanban/config.toml. Every field falls back to
 // defaultConfig when the file leaves it out.
 type config struct {
 	// Roots are the board-group directories to scan. Order matters: a new
@@ -67,7 +67,7 @@ func (d *duration) UnmarshalText(text []byte) error {
 
 func defaultConfig() config {
 	return config{
-		Roots: []string{tuiui.EnvOr("TABELAKANBAN_ROOT", filepath.Join(tuiui.HomeDir(), "kanban"))},
+		Roots: []string{tuiui.EnvOr("TABELHAKANBAN_ROOT", filepath.Join(tuiui.HomeDir(), "kanban"))},
 		Layout: layoutConfig{
 			CardLines:    3,
 			PanelGap:     1,
@@ -83,16 +83,16 @@ func defaultConfig() config {
 }
 
 // configPath is resolved lazily, not in a package-level var: an init-time var
-// would freeze TABELAKANBAN_CONFIG/XDG_CONFIG_HOME before main (or a test)
+// would freeze TABELHAKANBAN_CONFIG/XDG_CONFIG_HOME before main (or a test)
 // could set them.
 func configPath() string {
-	return tuiui.EnvOr("TABELAKANBAN_CONFIG", tuiui.ConfigPath("tabelakanban", "config.toml"))
+	return tuiui.EnvOr("TABELHAKANBAN_CONFIG", tuiui.ConfigPath("tabelhakanban", "config.toml"))
 }
 
 // legacyConfigPath is the pre-TOML file: one board-root per line. Still read
 // when no config.toml exists, so an existing install keeps working.
 func legacyConfigPath() string {
-	return tuiui.ConfigPath("tabelakanban", "config")
+	return tuiui.ConfigPath("tabelhakanban", "config")
 }
 
 // settings is the normalized snapshot the app reads from.
@@ -129,7 +129,7 @@ func normalize(c config) config {
 // refreshSettings re-reads config.toml from disk and returns a warning string
 // (never an error) — a bad config file must not stop the scan.
 // The Config is built per call rather than kept in a package var: both the
-// path (TABELAKANBAN_CONFIG) and the defaults (TABELAKANBAN_ROOT) come from
+// path (TABELHAKANBAN_CONFIG) and the defaults (TABELHAKANBAN_ROOT) come from
 // the environment, and a cached instance would freeze whatever they were on
 // the first call. Nothing is lost — this app re-reads on every rescan anyway
 // and never consults Reload's "changed" flag.
