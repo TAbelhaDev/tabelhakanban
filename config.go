@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui"
 )
 
 // config is tabelhakanban's settings schema, read from

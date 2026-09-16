@@ -180,16 +180,6 @@ func TestCtrlNavAndPreview(t *testing.T) {
 			m = *v
 		}
 	}
-	sendCtrl := func(k tea.KeyType) {
-		nm, _ := m.Update(tea.KeyMsg{Type: k})
-		switch v := nm.(type) {
-		case appModel:
-			m = v
-		case *appModel:
-			m = *v
-		}
-	}
-
 	if m.colIdx != 0 {
 		t.Fatalf("initial colIdx = %d, want 0", m.colIdx)
 	}
@@ -204,22 +194,24 @@ func TestCtrlNavAndPreview(t *testing.T) {
 		t.Fatalf("after h colIdx = %d, want 0", m.colIdx)
 	}
 
-	// ctrl+h/l move (reorder) the focused column instead of navigating
-	sendCtrl(tea.KeyCtrlL)
+	// [ / ] move (reorder) the focused column instead of navigating —
+	// ctrl+h/ctrl+l are reserved for pane navigation across TAbelhaDev TUIs,
+	// so column reorder lives on bracket keys here instead.
+	send("]")
 	if m.colIdx != 1 {
-		t.Fatalf("after ctrl+l colIdx = %d, want 1 (column moved right)", m.colIdx)
+		t.Fatalf("after ] colIdx = %d, want 1 (column moved right)", m.colIdx)
 	}
 	board, err := scanBoard(filepath.Join(root, "dev"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if board.Columns[0].Name != "b" || board.Columns[1].Name != "a" {
-		t.Fatalf("after ctrl+l column order = %s, %s; want b, a",
+		t.Fatalf("after ] column order = %s, %s; want b, a",
 			board.Columns[0].Name, board.Columns[1].Name)
 	}
-	sendCtrl(tea.KeyCtrlH)
+	send("[")
 	if m.colIdx != 0 {
-		t.Fatalf("after ctrl+h colIdx = %d, want 0 (column moved left)", m.colIdx)
+		t.Fatalf("after [ colIdx = %d, want 0 (column moved left)", m.colIdx)
 	}
 
 	if m.preview {

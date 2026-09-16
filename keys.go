@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui"
 )
 
 // reg is tabelhakanban's single source of truth for keybindings: defaults
@@ -16,11 +16,11 @@ var reg = tuiui.NewKeyRegistry(filepath.Join(tuiui.ConfigDir(), "tabelhakanban",
 
 func init() {
 	actions := []tuiui.Action{
-		tuiui.Action{ID: "quit", Help: "sair", Keys: []string{"q", "ctrl+c"}},
+		tuiui.Action{ID: "quit", Help: "sair", Keys: []string{"q"}},
 		tuiui.Action{ID: "help", Help: "keybindings", Keys: []string{"?"}},
 		tuiui.Action{ID: "settings", Help: "rebind keys", Keys: []string{","}},
 		tuiui.Action{ID: "refresh", Help: "recarregar", Keys: []string{"ctrl+r"}},
-		tuiui.Action{ID: "reload", Help: "recarregar config", Keys: []string{"f5"}},
+		tuiui.Action{ID: "reload", Help: "recarregar config", Keys: []string{"ctrl+shift+r"}},
 		tuiui.Action{ID: "sidebar", Help: "sidebar", Keys: []string{"ctrl+e"}},
 		tuiui.Action{ID: "logs", Help: "logs", Keys: []string{"g"}},
 		tuiui.Action{ID: "new-card", Help: "novo card", Keys: []string{"n"}},
@@ -37,8 +37,8 @@ func init() {
 		tuiui.Action{ID: "move-col-right", Help: "coluna dir", Keys: []string{"l", "right"}, Label: "l"},
 		tuiui.Action{ID: "shift-card-left", Help: "mover card esq", Keys: []string{"H"}},
 		tuiui.Action{ID: "shift-card-right", Help: "mover card dir", Keys: []string{"L"}},
-		tuiui.Action{ID: "reorder-col-left", Help: "coluna esq", Keys: []string{"ctrl+h"}},
-		tuiui.Action{ID: "reorder-col-right", Help: "coluna dir", Keys: []string{"ctrl+l"}},
+		tuiui.Action{ID: "reorder-col-left", Help: "coluna esq", Keys: []string{"["}},
+		tuiui.Action{ID: "reorder-col-right", Help: "coluna dir", Keys: []string{"]"}},
 		tuiui.Action{ID: "card-down", Help: "card baixo", Keys: []string{"j", "down"}, Label: "j"},
 		tuiui.Action{ID: "card-up", Help: "card cima", Keys: []string{"k", "up"}, Label: "k"},
 	}

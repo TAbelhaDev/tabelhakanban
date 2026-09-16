@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/TAbelhaDev/tabelhascaff/ipc"
 )
 
 // cardJSON is the wire format for the ipc subcommand.
@@ -46,7 +47,7 @@ func boardsToJSON(boards []Board) []boardJSON {
 // runIPC implements `takanban ipc <método> [key=value...] --json`, the
 // same scriptable-data-source convention as dcal/djobs/tradar.
 func runIPC(args []string) int {
-	parsed, err := tuiui.ParseIPCArgs(args)
+	parsed, err := ipc.ParseIPCArgs(args)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "uso: takanban ipc <método> [key=value...] --json")
 		fmt.Fprintln(os.Stderr, err)
@@ -74,13 +75,15 @@ func runIPC(args []string) int {
 			}
 			out = filtered
 		}
-		return tuiui.WriteJSON(out)
+		return ipc.WriteJSON(out)
 	case "boards.next":
 		return ipcBoardsNext(boards)
 	case "cards.create":
 		return ipcCardsCreate(boards, parsed.Filters)
 	case "cards.update":
 		return ipcCardsUpdate(boards, parsed.Filters)
+	case "cards.batch":
+		return ipcCardsBatch(boards, parsed.Filters)
 	case "cards.move":
 		return ipcCardsMove(boards, parsed.Filters)
 	default:
@@ -122,7 +125,7 @@ func ipcCardsCreate(boards []Board, filters map[string]string) int {
 		fmt.Fprintln(os.Stderr, "erro:", err)
 		return 1
 	}
-	return tuiui.WriteJSON(cardJSON{Title: card.Title, Path: card.Path, Body: card.Body})
+	return ipc.WriteJSON(cardJSON{Title: card.Title, Path: card.Path, Body: card.Body})
 }
 
 // ipcCardsUpdate replaces a card's body, keeping its due-date front matter.
@@ -141,7 +144,7 @@ func ipcCardsUpdate(boards []Board, filters map[string]string) int {
 				fmt.Fprintln(os.Stderr, "erro:", err)
 				return 1
 			}
-			return tuiui.WriteJSON(cardJSON{Title: updated.Title, Path: updated.Path, Body: updated.Body})
+			return ipc.WriteJSON(cardJSON{Title: updated.Title, Path: updated.Path, Body: updated.Body})
 		}
 	}
 	fmt.Fprintf(os.Stderr, "erro: card %q não existe na coluna %q do board %q\n", title, col.Name, filters["board"])
@@ -175,11 +178,65 @@ func ipcCardsMove(boards []Board, filters map[string]string) int {
 				fmt.Fprintln(os.Stderr, "erro:", err)
 				return 1
 			}
-			return tuiui.WriteJSON(cardJSON{Title: moved.Title, Path: moved.Path, Body: moved.Body})
+			return ipc.WriteJSON(cardJSON{Title: moved.Title, Path: moved.Path, Body: moved.Body})
 		}
 	}
 	fmt.Fprintf(os.Stderr, "erro: card %q não existe na coluna %q do board %q\n", title, from.Name, b.Name)
 	return 1
+}
+
+// batchCardItem is the wire format for a single card in cards.batch.
+// Accepts both body and placeholder (the suggestion contract uses placeholder).
+type batchCardItem struct {
+	Title       string `json:"title"`
+	Body        string `json:"body,omitempty"`
+	Placeholder string `json:"placeholder,omitempty"`
+}
+
+// ipcCardsBatch creates multiple cards idempotently — cards whose title
+// already exists in the column are silently skipped (no " (2)" suffix).
+// Filters: board=, column=, cards= (JSON array of {title, body}).
+func ipcCardsBatch(boards []Board, filters map[string]string) int {
+	_, col, ferr := findColumn(boards, filters["board"], filters["column"])
+	if ferr != "" {
+		fmt.Fprintln(os.Stderr, "erro:", ferr)
+		return 1
+	}
+	rawCards := filters["cards"]
+	if rawCards == "" {
+		fmt.Fprintln(os.Stderr, "erro: filtro cards= é obrigatório (array JSON)")
+		return 1
+	}
+	var items []batchCardItem
+	if err := json.Unmarshal([]byte(rawCards), &items); err != nil {
+		fmt.Fprintf(os.Stderr, "erro ao interpretar cards=: %v\n", err)
+		return 1
+	}
+
+	// Build a set of existing titles for O(1) lookup.
+	existing := make(map[string]bool, len(col.Cards))
+	for _, c := range col.Cards {
+		existing[c.Title] = true
+	}
+
+	var created []cardJSON
+	for _, item := range items {
+		if item.Title == "" || existing[item.Title] {
+			continue
+		}
+		body := item.Body
+		if body == "" {
+			body = item.Placeholder
+		}
+		card, err := createCardBody(*col, item.Title, body)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "erro ao criar card %q: %v\n", item.Title, err)
+			continue
+		}
+		created = append(created, cardJSON{Title: card.Title, Path: card.Path, Body: card.Body})
+		existing[card.Title] = true
+	}
+	return ipc.WriteJSON(created)
 }
 
 // ipcBoardsNext returns the single card tabelhakanban itself would put first:
@@ -188,14 +245,14 @@ func ipcCardsMove(boards []Board, filters map[string]string) int {
 // done.
 func ipcBoardsNext(boards []Board) int {
 	if len(boards) == 0 {
-		return tuiui.WriteJSON(nil)
+		return ipc.WriteJSON(nil)
 	}
 	b := boards[0]
 	for _, c := range b.Columns {
 		if isDoneColumn(c.Name) || len(c.Cards) == 0 {
 			continue
 		}
-		return tuiui.WriteJSON(boardJSON{Name: b.Name, Path: b.Path, Columns: []columnJSON{{
+		return ipc.WriteJSON(boardJSON{Name: b.Name, Path: b.Path, Columns: []columnJSON{{
 			Name: c.Name, Path: c.Path, Cards: []cardJSON{{Title: c.Cards[0].Title, Path: c.Cards[0].Path, Body: c.Cards[0].Body}},
 		}}})
 	}
@@ -203,11 +260,11 @@ func ipcBoardsNext(boards []Board) int {
 		if len(c.Cards) == 0 {
 			continue
 		}
-		return tuiui.WriteJSON(boardJSON{Name: b.Name, Path: b.Path, Columns: []columnJSON{{
+		return ipc.WriteJSON(boardJSON{Name: b.Name, Path: b.Path, Columns: []columnJSON{{
 			Name: c.Name, Path: c.Path, Cards: []cardJSON{{Title: c.Cards[0].Title, Path: c.Cards[0].Path, Body: c.Cards[0].Body}},
 		}}})
 	}
-	return tuiui.WriteJSON(nil)
+	return ipc.WriteJSON(nil)
 }
 
 // isDoneColumn matches a column name against the configured markers

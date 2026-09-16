@@ -12,7 +12,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui/markdown"
 )
 
 // mode tracks which interaction is on top of the kanban: normal board
@@ -128,6 +129,7 @@ type appModel struct {
 	sidebar        bool
 	sidebarFocused bool
 	preview        bool
+	previewVP      *markdown.Panel
 	mode           mode
 	form           *huh.Form
 	inputKind      inputKind
@@ -154,7 +156,8 @@ type appModel struct {
 func newModel() appModel {
 	_ = reg.Load()
 	m := appModel{
-		sidebar: true,
+		sidebar:    true,
+		previewVP:  markdown.NewPanel(),
 		helpModal: tuiui.NewHelpModal(tuiui.HelpSection{
 			Title:      "Atalhos",
 			BindingsFn: reg.Bindings,
@@ -287,6 +290,10 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width, m.height = sizeMsg.Width, sizeMsg.Height
 		m.helpModal.SetSize(sizeMsg.Width, sizeMsg.Height)
 		m.settingsModal.SetSize(sizeMsg.Width, sizeMsg.Height)
+		// viewport height = bodyHeight - 2 (border) = (height - 3) - 2
+		if h := sizeMsg.Height - 5; h > 0 {
+			m.previewVP.Viewport().SetHeight(h)
+		}
 		m.reclamp()
 		return m, nil
 	}
@@ -442,6 +449,8 @@ func (m *appModel) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.boardIdx++
 				m.colIdx, m.cardIdx = 0, 0
 			}
+		} else if m.preview && m.previewVP.Viewport().MaxScroll() > 0 && m.currentCard() != nil {
+			m.previewVP.Viewport().Update(keyMsg)
 		} else if c := m.currentColumn(); c != nil && m.cardIdx < len(c.Cards)-1 {
 			m.cardIdx++
 		}
@@ -451,6 +460,8 @@ func (m *appModel) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.boardIdx--
 				m.colIdx, m.cardIdx = 0, 0
 			}
+		} else if m.preview && m.previewVP.Viewport().MaxScroll() > 0 && m.currentCard() != nil {
+			m.previewVP.Viewport().Update(keyMsg)
 		} else if m.cardIdx > 0 {
 			m.cardIdx--
 		}
@@ -1109,39 +1120,28 @@ func (m appModel) renderSidebar(height, innerWidth int) string {
 }
 
 // renderPreview is the side panel showing the selected card's markdown
-// rendered as plain text.
+// rendered via glamour (through the shared markdown.Panel).
 func (m appModel) renderPreview(card *Card, width, height int) string {
-	var content string
-	if card == nil {
-		content = theme.Dim().Render("sem card selecionado")
-	} else {
-		content = theme.Title().Render(card.Title) + "\n\n" + wrapText(stripMarkdown(card.Body), width-4)
+	vpHeight := height - 2 // border overhead
+	if vpHeight < 1 {
+		vpHeight = 1
 	}
-	// The preview's title lives inside the content, so only the border (2
-	// lines) is overhead — unlike columns/sidebar which add title+blank
-	// externally. Pad so the panel lands exactly on the body's last line.
-	content = padToHeight(content, height-2)
-	return theme.Panel(true).Render(padLines(content, width-4))
-}
+	m.previewVP.Viewport().SetHeight(vpHeight)
 
-// stripMarkdown drops the opening H1 (it duplicates the title) and leading
-// markdown markers, leaving plain text to wrap in the preview panel.
-func stripMarkdown(body string) string {
-	lines := strings.Split(body, "\n")
-	var out []string
-	for i, line := range lines {
-		t := strings.TrimSpace(line)
-		if i == 0 && strings.HasPrefix(t, "#") {
-			continue
-		}
-		t = strings.TrimLeft(t, "#>-* ")
-		t = strings.TrimSpace(strings.ReplaceAll(t, "**", ""))
-		out = append(out, t)
+	if card == nil {
+		m.previewVP.Focus(false)
+		content := theme.Dim().Render("sem card selecionado")
+		content = padToHeight(content, height-2)
+		return theme.Panel(false).Render(padLines(content, width-4))
 	}
-	for len(out) > 0 && out[len(out)-1] == "" {
-		out = out[:len(out)-1]
-	}
-	return strings.Join(out, "\n")
+
+	// Focus the viewport when preview is open and sidebar isn't focused.
+	m.previewVP.Focus(m.preview && !m.sidebarFocused)
+	m.previewVP.SetTitle(card.Title)
+	m.previewVP.SetMarkdown(card.Body, width-4, theme)
+
+	content := m.previewVP.View(theme, width)
+	return content
 }
 
 // renderNotice is the reserved line between the board and the footer where

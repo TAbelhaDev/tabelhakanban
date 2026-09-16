@@ -33,6 +33,27 @@ func createCard(column Column, title string) (Card, error) {
 	return Card{Title: title, Path: path, Body: body}, nil
 }
 
+// createCardBody is like createCard but uses the provided body instead of
+// the default "# title" — used by cards.batch for retro post cards that
+// carry a full markdown draft.
+func createCardBody(column Column, title, body string) (Card, error) {
+	title = sanitizeTitle(title)
+	if title == "" {
+		return Card{}, fmt.Errorf("título vazio")
+	}
+	path, n := uniquePath(column.Path, title, ".md")
+	if n > 1 {
+		title = fmt.Sprintf("%s (%d)", title, n)
+	}
+	if body == "" {
+		body = "# " + title + "\n"
+	}
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		return Card{}, err
+	}
+	return Card{Title: title, Path: path, Body: body}, nil
+}
+
 // renameCard moves the card file to a new title, preserving the body.
 func renameCard(card Card, newTitle string) (Card, error) {
 	newTitle = sanitizeTitle(newTitle)

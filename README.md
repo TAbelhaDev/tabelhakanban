@@ -10,7 +10,7 @@ it in your `$EDITOR` and git takes care of the rest.
 
 [![Go Version](https://img.shields.io/github/go-mod/go-version/TAbelhaDev/tabelhakanban?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
 [![Built with Bubble Tea](https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4?style=flat-square)](https://github.com/charmbracelet/bubbletea)
-[![Powered by tabelatuiui](https://img.shields.io/badge/theme-tabelatuiui-d6b4f7?style=flat-square)](https://github.com/TAbelhaDev/tabelatuiui)
+[![Powered by tabelhatuiui](https://img.shields.io/badge/theme-tabelhatuiui-d6b4f7?style=flat-square)](https://github.com/TAbelhaDev/tabelhatuiui)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ianptkcs)
@@ -88,7 +88,9 @@ Inside the TUI:
   sidebar, where `j`/`k` switch board and `enter`/`l` go back to the columns.
 - `j`/`k` move between the cards of the focused column.
 - `H`/`L` move the selected card to the neighbouring column.
-- `ctrl+h`/`ctrl+l` reorder the focused column (moving the column itself).
+- `[`/`]` reorder the focused column (moving the column itself). `ctrl+h`/`ctrl+l`
+  are reserved for pane navigation across TAbelhaDev TUIs, so reorder doesn't
+  live there.
 - `n` creates a card, `N` a column, `B` a board (the new board lands in the first
   root), `r` renames the selected card, `R` the column, `d` deletes the card and
   `D` the column (all with a confirmation or modal prompt).
@@ -131,8 +133,8 @@ tabelharadar's `projects.next`.
 
 Everything lives in `~/.config/tabelhakanban/config.toml` (overridable through
 `TABELHAKANBAN_CONFIG`). The file is optional and partial: only the keys present
-override anything, the rest stay on their defaults. `f5` reloads without
-restarting.
+override anything, the rest stay on their defaults. `ctrl+shift+r` reloads
+without restarting.
 
 ```toml
 # Folders whose children are boards. Order matters: a new board is born in the 1st.
@@ -181,7 +183,7 @@ Once `config.toml` exists, it takes over on its own.
 
 The theme and the shared chrome (header/footer/panels, ANSI-aware padding, IPC
 helpers) come from
-[`tabelatuiui`](https://github.com/TAbelhaDev/tabelatuiui).
+[`tabelhatuiui`](https://github.com/TAbelhaDev/tabelhatuiui).
 
 ## Development
 

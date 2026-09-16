@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui"
 )
 
 // App-specific styles on top of tabelatuiui's shared chrome (called as
@@ -16,7 +16,6 @@ func padLines(s string, width int) string {
 	}
 	return tuiui.PadLines(s, width)
 }
-func wrapText(s string, width int) string { return tuiui.WrapText(s, width) }
 func padToHeight(s string, lines int) string {
 	if lines < 0 {
 		lines = 0
