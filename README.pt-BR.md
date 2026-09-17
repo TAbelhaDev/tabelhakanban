@@ -10,7 +10,7 @@ arquivo; edita no seu `$EDITOR` e o git cuida do resto.
 
 [![Go Version](https://img.shields.io/github/go-mod/go-version/TAbelhaDev/tabelhakanban?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
 [![Built with Bubble Tea](https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4?style=flat-square)](https://github.com/charmbracelet/bubbletea)
-[![Powered by tabelatuiui](https://img.shields.io/badge/theme-tabelatuiui-d6b4f7?style=flat-square)](https://github.com/TAbelhaDev/tabelatuiui)
+[![Powered by tabelhatuiui](https://img.shields.io/badge/theme-tabelhatuiui-d6b4f7?style=flat-square)](https://github.com/TAbelhaDev/tabelhatuiui)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ianptkcs)
@@ -57,22 +57,32 @@ card é o markdown que você já escreve todo dia.
 Requer Go 1.26+.
 
 ```bash
-go install github.com/TAbelhaDev/tabelhakanban@latest
+go install github.com/TAbelhaDev/tabelhakanban/cmd/takanban@latest
 ```
 
-Isso instala o binário como `tabelhakanban` (nome do módulo). Pra ter o nome curto
-`takanban` usado no resto deste README, compile a partir do source:
+Ou compile a partir do source:
 
 ```bash
 git clone https://github.com/TAbelhaDev/tabelhakanban.git
 cd tabelhakanban
-go build -o takanban .
+go build -o takanban ./cmd/takanban
 ```
 
 Pra usar como comando global (precisa que `~/.local/bin` esteja no seu `PATH`):
 
 ```bash
-go build -o ~/.local/bin/takanban .
+go build -o ~/.local/bin/takanban ./cmd/takanban
+```
+
+### Desenvolvimento local
+
+Um hook `post-commit` em `.githooks/` reconstrói e reinstala o `takanban` em
+`~/.local/bin/takanban` a cada commit, então o comando local nunca fica
+desatualizado. O git não ativa o `.githooks/` de um repo sozinho — rode isso
+uma vez por clone:
+
+```bash
+git config core.hooksPath .githooks
 ```
 
 ## Uso

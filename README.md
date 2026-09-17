@@ -57,22 +57,32 @@ just the markdown you already write every day.
 Requires Go 1.26+.
 
 ```bash
-go install github.com/TAbelhaDev/tabelhakanban@latest
+go install github.com/TAbelhaDev/tabelhakanban/cmd/takanban@latest
 ```
 
-That installs the binary as `tabelhakanban` (matching the module name). To get the short
-`takanban` name used throughout this README, build from source instead:
+Or build from source:
 
 ```bash
 git clone https://github.com/TAbelhaDev/tabelhakanban.git
 cd tabelhakanban
-go build -o takanban .
+go build -o takanban ./cmd/takanban
 ```
 
 To use it as a global command (needs `~/.local/bin` on your `PATH`):
 
 ```bash
-go build -o ~/.local/bin/takanban .
+go build -o ~/.local/bin/takanban ./cmd/takanban
+```
+
+### Local development
+
+A `post-commit` hook in `.githooks/` rebuilds and reinstalls `takanban` to
+`~/.local/bin/takanban` after every commit, so the local command never goes
+stale. Git doesn't enable a repo's `.githooks/` automatically on clone — run
+this once per clone:
+
+```bash
+git config core.hooksPath .githooks
 ```
 
 ## Usage
